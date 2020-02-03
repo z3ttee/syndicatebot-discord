@@ -1,6 +1,7 @@
 # Project exclude paths
 /.gradle/
 /.idea/
+/configs/
 vcs.xml
 
 # Compiled class file

@@ -15,5 +15,25 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
+    // JSON Lib - GSON by Google
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    // JDA - Java Discord API
     implementation 'net.dv8tion:JDA:4.1.1_105'
+
+    // Lombok
+    implementation 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+
+    // Logback
+    implementation 'ch.qos.logback:logback-classic:0.9.26'
+
+    // Reflections Lib
+    implementation 'org.reflections:reflections:0.9.5-RC2'
+
+    // Lavaplayer
+    implementation 'com.sedmelluq:lavaplayer:1.3.34'
+
+    // Apache Validator
+    implementation 'commons-validator:commons-validator:1.4.0'
 }
