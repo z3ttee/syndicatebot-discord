@@ -32,5 +32,6 @@ public class CMD_Join extends Command {
         }
 
         BotConnection.createNew(message.getMember().getVoiceState().getChannel(), message.getTextChannel());
+        Messages.sendText(":mega: Stimmenkanal betreten.", message.getTextChannel());
     }
 }
