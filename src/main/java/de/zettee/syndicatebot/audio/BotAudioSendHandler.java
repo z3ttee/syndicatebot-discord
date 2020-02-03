@@ -17,28 +17,14 @@ public class BotAudioSendHandler implements AudioSendHandler {
 
     @Override
     public boolean canProvide() {
-        if (lastFrame == null) {
-            lastFrame = audioPlayer.provide();
-        }
-
+        lastFrame = audioPlayer.provide();
         return lastFrame != null;
     }
 
     @Nullable
     @Override
     public ByteBuffer provide20MsAudio() {
-        if (lastFrame == null) {
-            lastFrame = audioPlayer.provide();
-        }
-
-        byte[] data = lastFrame != null ? lastFrame.getData() : null;
-        lastFrame = null;
-
-        if(data != null) {
-            return ByteBuffer.wrap(data);
-        } else {
-            return null;
-        }
+        return ByteBuffer.wrap(lastFrame.getData());
     }
 
     @Override
