@@ -40,4 +40,7 @@ public class CommandHandler {
             Messages.sendError(":mag: Befehl nicht gefunden.", message.getTextChannel());
         }
     }
+    public void perform(Message message, Command command, String[] args) {
+        command.execute(message, args);
+    }
 }

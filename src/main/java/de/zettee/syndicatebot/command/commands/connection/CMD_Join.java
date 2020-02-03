@@ -26,6 +26,11 @@ public class CMD_Join extends Command {
             return;
         }
 
-        BotConnection.createNew(message.getMember().getVoiceState().getChannel());
+        if(message.getGuild().getAudioManager().isConnected()) {
+            Messages.sendError("Ich bin bereits mit einem Stimmenkanal verbunden.", message.getTextChannel());
+            return;
+        }
+
+        BotConnection.createNew(message.getMember().getVoiceState().getChannel(), message.getTextChannel());
     }
 }

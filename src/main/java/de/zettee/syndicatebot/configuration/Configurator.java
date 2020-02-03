@@ -49,6 +49,7 @@ public class Configurator {
         @Getter private String guildID;
         @Getter private String prefix = "ss ";
         @Getter private String guildName;
+        @Getter private int volume = 30;
         @Getter private transient File file;
 
         public Config(Guild guild) {

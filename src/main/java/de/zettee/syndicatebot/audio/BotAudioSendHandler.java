@@ -11,8 +11,8 @@ public class BotAudioSendHandler implements AudioSendHandler {
     private final AudioPlayer audioPlayer;
     private AudioFrame lastFrame;
 
-    public BotAudioSendHandler(AudioPlayer audioPlayer) {
-        this.audioPlayer = audioPlayer;
+    public BotAudioSendHandler(AudioPlayer player) {
+        this.audioPlayer = player;
     }
 
     @Override

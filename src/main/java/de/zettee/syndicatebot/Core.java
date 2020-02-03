@@ -1,5 +1,6 @@
 package de.zettee.syndicatebot;
 
+import de.zettee.syndicatebot.audio.BotConnection;
 import de.zettee.syndicatebot.command.CommandHandler;
 import de.zettee.syndicatebot.command.commands.connection.CMD_Join;
 import de.zettee.syndicatebot.command.commands.connection.CMD_Leave;
@@ -21,7 +22,7 @@ public class Core {
     @Getter private static Core instance;
 
     public Core(String token) {
-
+        BotConnection.initialize();
         Configurator.createInstance();
         CommandHandler.getInstance();
 
