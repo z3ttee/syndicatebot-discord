@@ -10,9 +10,7 @@ import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GuildMusicManager {
 

@@ -46,7 +46,7 @@ public class Configurator {
 
     public static class Config {
 
-        @Getter private String guildID;
+        @Getter private transient String guildID;
         @Getter private String prefix = "ss ";
         @Getter private String guildName;
         @Getter private int volume = 30;
@@ -61,29 +61,37 @@ public class Configurator {
 
         public boolean create(){
             if(file.exists()) return true;
-
-            try {
-                if (file.createNewFile()) {
-                    String s = gson.toJson(this);
-
-                    FileWriter writer = new FileWriter(getFile());
-                    writer.write(s);
-                    writer.flush();
-                    writer.close();
-                    return true;
-                }
-                return false;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return false;
+            return writeToFile();
         }
         public boolean delete(){
             return file.delete();
         }
-        public void load(){
+        public boolean writeToFile(){
+            try {
+                String s = gson.toJson(this);
+                FileWriter writer = new FileWriter(getFile());
 
+                writer.write(s);
+                writer.flush();
+                writer.close();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        public void setPrefix(String prefix) {
+            this.prefix = prefix;
+            writeToFile();
+        }
+        public void setGuildName(String guildName) {
+            this.guildName = guildName;
+            writeToFile();
+        }
+        public void setVolume(int volume) {
+            this.volume = volume;
+            writeToFile();
         }
     }
 }

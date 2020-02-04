@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import de.zettee.syndicatebot.configuration.Configurator;
+import de.zettee.syndicatebot.messages.Messages;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -35,27 +36,7 @@ public class BotAudioScheduler extends AudioEventAdapter {
 
     public void enqueue(AudioTrack track) {
         if(player.getPlayingTrack() != null) {
-            long timeMillis = 0;
-
-            for(AudioTrack t : getQueue()) {
-                timeMillis += t.getDuration();
-            }
-
-            timeMillis += (player.getPlayingTrack().getDuration()-player.getPlayingTrack().getPosition());
-
-            Duration duration = Duration.ofMillis(timeMillis);
-            long min = duration.toMinutes();
-            long sec = duration.minusMinutes(min).getSeconds();
-
-            BotConnection.getTextChannel(guild).sendMessage(
-                    new MessageBuilder(":white_check_mark: Sendung zur Warteschlange :clipboard: hinzugefügt")
-                            .setEmbed(new EmbedBuilder()
-                                    .setTitle(track.getInfo().title,track.getInfo().uri)
-                                    .setDescription(" ")
-                                    .addField("# in Warteschlange", String.valueOf(getQueue().size()+1), false)
-                                    .addField("sendet in ",min+":"+sec, false).build())
-                            .build()
-            ).queue();
+            Messages.sendEnqueuedInfo(BotConnection.getTextChannel(guild), track);
         }
 
         if(!player.startTrack(track, true)){
@@ -83,8 +64,7 @@ public class BotAudioScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         this.player.setVolume(this.volume);
-        BotConnection.sendPlayerInfo(BotConnection.getTextChannel(guild), true);
-
+        Messages.sendPlayerInfo(BotConnection.getTextChannel(guild), true);
     }
 
     @Override

@@ -91,35 +91,4 @@ public class BotConnection {
     public static void setTextChannel(Guild guild, TextChannel channel) {
         boundTextChannels.put(guild, channel);
     }
-
-    public static void sendPlayerInfo(TextChannel channel, boolean deleteOld){
-        AudioTrack track = getGuildMusicManager(channel.getGuild()).player.getPlayingTrack();
-
-        Duration duration = Duration.ofMillis(track.getDuration());
-        long min = duration.toMinutes();
-        long sec = duration.minusMinutes(min).getSeconds();
-
-        GuildMusicManager musicManager = BotConnection.getGuildMusicManager(channel.getGuild());
-        Member member = musicManager.getRequests().get(channel.getGuild()).get(track);
-
-
-        if(deleteOld && musicManager.scheduler.getCurrentlyPlayingInfo() != null) {
-            musicManager.scheduler.getCurrentlyPlayingInfo().delete().queue();
-        }
-
-        channel.sendMessage(
-                new MessageBuilder(":notes: **Aktuelle Sendung** :notes:")
-                        .setEmbed(new EmbedBuilder()
-                                .setTitle(track.getInfo().title,track.getInfo().uri)
-                                .setDescription(" ")
-                                .addField("Sender",track.getInfo().author, false)
-                                .addField("Laufzeit",min+":"+sec, false)
-                                .setFooter("Hinzugefügt von "+member.getUser().getName()+"#"+member.getUser().getDiscriminator(), member.getUser().getAvatarUrl()).build())
-                        .build()
-        ).queue(success -> {
-            if(deleteOld) {
-                musicManager.scheduler.setCurrentlyPlayingInfo(success);
-            }
-        });
-    }
 }

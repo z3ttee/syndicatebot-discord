@@ -1,9 +1,7 @@
 package de.zettee.syndicatebot.listener;
 
-import de.zettee.syndicatebot.Core;
 import de.zettee.syndicatebot.command.CommandHandler;
 import de.zettee.syndicatebot.configuration.Configurator;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -26,8 +24,7 @@ public class OnGuildListener extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(@Nonnull GuildJoinEvent event) {
-        // TODO: Create config
-        super.onGuildJoin(event);
+        Configurator.ofGuild(event.getGuild()).create();
     }
     @Override
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {
@@ -37,7 +34,6 @@ public class OnGuildListener extends ListenerAdapter {
     public void onGuildBan(@Nonnull GuildBanEvent event) {
         Configurator.ofGuild(event.getGuild()).delete();
     }
-
     @Override
     public void onGuildReady(@Nonnull GuildReadyEvent event) {
         Configurator.ofGuild(event.getGuild());
