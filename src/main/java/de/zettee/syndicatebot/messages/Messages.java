@@ -33,6 +33,12 @@ public class Messages {
         long min = duration.toMinutes();
         long sec = duration.minusMinutes(min).getSeconds();
 
+        String m = String.valueOf(min);
+        String s = String.valueOf(sec);
+
+        if(m.length() <= 1) m = "0"+m;
+        if(s.length() <= 1) s = "0"+s;
+
         GuildMusicManager musicManager = BotConnection.getGuildMusicManager(channel.getGuild());
         Member member = musicManager.getRequests().get(channel.getGuild()).get(track);
 
@@ -46,7 +52,7 @@ public class Messages {
                                 .setTitle(track.getInfo().title,track.getInfo().uri)
                                 .setDescription(" ")
                                 .addField("Sender",track.getInfo().author, false)
-                                .addField("Laufzeit",min+":"+sec, false)
+                                .addField("Laufzeit",m+":"+s, false)
                                 .setFooter("Hinzugefügt von "+member.getUser().getName()+"#"+member.getUser().getDiscriminator(), member.getUser().getAvatarUrl()).build())
                         .build()
         ).queue(success -> {
@@ -72,15 +78,25 @@ public class Messages {
         long min = duration.toMinutes();
         long sec = duration.minusMinutes(min).getSeconds();
 
+        String m = String.valueOf(min);
+        String s = String.valueOf(sec);
+
+        if(m.length() <= 1) m = "0"+m;
+        if(s.length() <= 1) s = "0"+s;
+
         channel.sendMessage(
-                new MessageBuilder(":white_check_mark: Sendung zur Warteschlange :clipboard: hinzugefügt")
+                new MessageBuilder(":white_check_mark: :clipboard: **Sendung zur Warteschlange hinzugefügt**")
                         .setEmbed(new EmbedBuilder()
                                 .setTitle(track.getInfo().title,track.getInfo().uri)
                                 .setDescription(" ")
                                 .addField("# in Warteschlange", String.valueOf(queue.size()+1), false)
-                                .addField("sendet in ",min+":"+sec, false).build())
+                                .addField("sendet in ",m+":"+s, false).build())
                         .build()
         ).queue();
+    }
+
+    public static void sendTextAndGet(String message, TextChannel channel, MessageSentEvent event) {
+        channel.sendMessage("**"+message+"**").queue(event::messageSent);
     }
 
 }

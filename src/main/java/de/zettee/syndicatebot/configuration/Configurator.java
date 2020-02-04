@@ -38,7 +38,6 @@ public class Configurator {
     }
 
     public static void createInstance() {
-        // TODO: Load config
         File configsDir = new File(System.getProperty("user.dir")+"/configs/");
         if(!configsDir.exists()) configsDir.mkdirs();
     }

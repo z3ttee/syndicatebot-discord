@@ -17,8 +17,13 @@ public class CMD_Play extends Command {
 
     @Override
     public void execute(Message message, String[] args) {
-        if(args.length < 1) {
-            Messages.sendUsage(this, message.getTextChannel());
+        if(args.length == 0) {
+            if(!BotConnection.getGuildMusicManager(message.getGuild()).player.isPaused()) {
+                Messages.sendUsage(this, message.getTextChannel());
+                return;
+            }
+
+            CommandHandler.getInstance().perform(message, new CMD_Pause(), new String[0]);
             return;
         }
 
