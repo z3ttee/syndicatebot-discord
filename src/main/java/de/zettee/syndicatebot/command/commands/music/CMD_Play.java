@@ -1,5 +1,6 @@
 package de.zettee.syndicatebot.command.commands.music;
 
+import de.zettee.syndicatebot.Core;
 import de.zettee.syndicatebot.audio.BotConnection;
 import de.zettee.syndicatebot.command.Category;
 import de.zettee.syndicatebot.command.Command;
@@ -37,6 +38,16 @@ public class CMD_Play extends Command {
             BotConnection.loadAndPlay(message.getMember(), message.getGuild(), param);
         } else {
             // TODO: Search on youtube
+            String query = String.join(" ", args);
+            Messages.sendText(":mag::man_detective: Es wird auf YouTube nach ` "+query+" ` gesucht.", message.getTextChannel());
+
+            try {
+                String url = Core.getInstance().performYoutubeSearch(query, 1).take();
+                BotConnection.loadAndPlay(message.getMember(), message.getGuild(), url);
+            } catch (Exception e) {
+                Messages.sendError("Die YouTube-Suche wurde durch einen Fehler abgebrochen.", message.getTextChannel());
+                e.printStackTrace();
+            }
         }
     }
 }
