@@ -17,6 +17,7 @@ import de.zettee.syndicatebot.command.commands.CMD_Update;
 import de.zettee.syndicatebot.command.commands.music.*;
 import de.zettee.syndicatebot.configuration.Configurator;
 import de.zettee.syndicatebot.listener.OnGuildListener;
+import de.zettee.syndicatebot.listener.OnReactionListener;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -71,7 +72,9 @@ public class Core {
         builder.setAutoReconnect(true);
         builder.setActivity(Activity.listening("ss help"));
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.addEventListeners(new OnGuildListener());
+        builder.addEventListeners(
+                new OnGuildListener(),
+                new OnReactionListener());
 
         try {
             builder.build();

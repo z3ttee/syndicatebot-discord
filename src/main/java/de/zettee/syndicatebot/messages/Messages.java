@@ -1,6 +1,7 @@
 package de.zettee.syndicatebot.messages;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.zettee.syndicatebot.audio.BotConnection;
 import de.zettee.syndicatebot.audio.manager.GuildMusicManager;
@@ -10,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.dom4j.Text;
 
 import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
@@ -94,9 +96,23 @@ public class Messages {
                         .build()
         ).queue();
     }
+    public static void sendEnqueuedPlaylistInfo(TextChannel channel, AudioPlaylist playlist) {
+        channel.sendMessage(
+                new MessageBuilder(":white_check_mark: :clipboard: **` "+playlist.getTracks().size()+" ` Sendungen zur Warteschlange hinzugefügt**").build()
+        ).queue();
+    }
 
     public static void sendTextAndGet(String message, TextChannel channel, MessageSentEvent event) {
         channel.sendMessage("**"+message+"**").queue(event::messageSent);
+    }
+    public static void sendException(TextChannel channel, Exception exception) {
+        channel.sendMessage(new MessageBuilder(":warning::exclamation: **Ein Fehler ist aufgetreten**").setEmbed(
+                new EmbedBuilder()
+                        .setDescription(exception.getMessage())
+                        .setColor(EmbedColors.ERROR.getColor())
+                        .build()
+        ).build()).queue();
+        exception.printStackTrace();
     }
 
 }

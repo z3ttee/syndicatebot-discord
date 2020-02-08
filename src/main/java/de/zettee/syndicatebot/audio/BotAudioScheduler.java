@@ -35,10 +35,6 @@ public class BotAudioScheduler extends AudioEventAdapter {
     }
 
     public void enqueue(AudioTrack track) {
-        if(player.getPlayingTrack() != null) {
-            Messages.sendEnqueuedInfo(BotConnection.getTextChannel(guild), track);
-        }
-
         if(!player.startTrack(track, true)){
             queue.offer(track);
         }

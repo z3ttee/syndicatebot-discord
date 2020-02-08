@@ -8,6 +8,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.zettee.syndicatebot.audio.manager.GuildMusicManager;
+import de.zettee.syndicatebot.messages.EmbedColors;
+import de.zettee.syndicatebot.messages.Messages;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -39,6 +41,16 @@ public class BotConnection {
 
     public static void playAudio(GuildMusicManager musicManager, AudioTrack track) {
         musicManager.scheduler.enqueue(track);
+        if(musicManager.player.getPlayingTrack() != null) {
+            Messages.sendEnqueuedInfo(BotConnection.getTextChannel(musicManager.getGuild()), track);
+        }
+    }
+    public static void playPlaylist(Member member, GuildMusicManager musicManager, AudioPlaylist playlist) {
+        for(AudioTrack track : playlist.getTracks()) {
+            musicManager.addRequest(track, member);
+            musicManager.scheduler.enqueue(track);
+        }
+        Messages.sendEnqueuedPlaylistInfo(BotConnection.getTextChannel(musicManager.getGuild()), playlist);
     }
 
     public static void loadAndPlay(Member member, Guild guild, String url) {
@@ -52,17 +64,17 @@ public class BotConnection {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                // TODO
+                playPlaylist(member, musicManager, playlist);
             }
 
             @Override
             public void noMatches() {
-                // TODO: Error message
+                Messages.sendError(":mag: Keine Treffer für die Suche gefunden.", BotConnection.getTextChannel(guild));
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                // TODO: Error message
+                Messages.sendException(BotConnection.getTextChannel(guild), exception);
             }
         });
     }

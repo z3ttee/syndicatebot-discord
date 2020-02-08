@@ -37,7 +37,6 @@ public class CMD_Play extends Command {
             // Youtube link or stream
             BotConnection.loadAndPlay(message.getMember(), message.getGuild(), param);
         } else {
-            // TODO: Search on youtube
             String query = String.join(" ", args);
             Messages.sendText(":mag::man_detective: Es wird auf YouTube nach ` "+query+" ` gesucht.", message.getTextChannel());
 
