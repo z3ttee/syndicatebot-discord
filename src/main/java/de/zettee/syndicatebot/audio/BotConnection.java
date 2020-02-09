@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class BotConnection {
 
@@ -40,41 +41,40 @@ public class BotConnection {
     }
 
     public static void playAudio(GuildMusicManager musicManager, AudioTrack track) {
-        musicManager.scheduler.enqueue(track);
-        if(musicManager.player.getPlayingTrack() != null) {
-            Messages.sendEnqueuedInfo(BotConnection.getTextChannel(musicManager.getGuild()), track);
-        }
+        musicManager.scheduler.enqueue(track, false);
     }
     public static void playPlaylist(Member member, GuildMusicManager musicManager, AudioPlaylist playlist) {
         for(AudioTrack track : playlist.getTracks()) {
             musicManager.addRequest(track, member);
-            musicManager.scheduler.enqueue(track);
+            musicManager.scheduler.enqueue(track, true);
         }
         Messages.sendEnqueuedPlaylistInfo(BotConnection.getTextChannel(musicManager.getGuild()), playlist);
     }
 
-    public static void loadAndPlay(Member member, Guild guild, String url) {
-        GuildMusicManager musicManager = getGuildMusicManager(guild);
+    public static void loadAndPlay(Message message, String url) {
+        GuildMusicManager musicManager = getGuildMusicManager(message.getGuild());
         playerManager.loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                musicManager.addRequest(track, member);
+                musicManager.addRequest(track, Objects.requireNonNull(message.getMember()));
                 playAudio(musicManager, track);
+                message.delete().queue();
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                playPlaylist(member, musicManager, playlist);
+                playPlaylist(message.getMember(), musicManager, playlist);
+                message.delete().queue();
             }
 
             @Override
             public void noMatches() {
-                Messages.sendError(":mag: Keine Treffer für die Suche gefunden.", BotConnection.getTextChannel(guild));
+                Messages.sendError(":mag: Keine Treffer für die Suche gefunden.", BotConnection.getTextChannel(message.getGuild()));
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                Messages.sendException(BotConnection.getTextChannel(guild), exception);
+                Messages.sendException(BotConnection.getTextChannel(message.getGuild()), exception);
             }
         });
     }

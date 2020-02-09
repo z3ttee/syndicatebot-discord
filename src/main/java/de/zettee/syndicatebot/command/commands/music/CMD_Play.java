@@ -35,14 +35,14 @@ public class CMD_Play extends Command {
         String param = args[0];
         if(UrlValidator.getInstance().isValid(param)) {
             // Youtube link or stream
-            BotConnection.loadAndPlay(message.getMember(), message.getGuild(), param);
+            BotConnection.loadAndPlay(message, param);
         } else {
             String query = String.join(" ", args);
             Messages.sendText(":mag::man_detective: Es wird auf YouTube nach ` "+query+" ` gesucht.", message.getTextChannel());
 
             try {
                 String url = Core.getInstance().performYoutubeSearch(query, 1).take();
-                BotConnection.loadAndPlay(message.getMember(), message.getGuild(), url);
+                BotConnection.loadAndPlay(message, url);
             } catch (Exception e) {
                 Messages.sendError("Die YouTube-Suche wurde durch einen Fehler abgebrochen.", message.getTextChannel());
                 e.printStackTrace();

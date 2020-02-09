@@ -29,6 +29,8 @@ public class CMD_Volume extends Command {
             return;
         }
 
+        amount = Math.min(amount, 100);
+
         musicManager.scheduler.setVolume(amount);
         message.getGuild().getAudioManager().setSelfMuted((amount == 0));
         Messages.sendText((amount >= 66 ? ":loud_sound:" : amount >= 33 ? ":sound:" : amount > 0 ? ":speaker:" : ":mute:")+" Lautstärke wurde auf ` "+amount+" ` gestellt.", message.getTextChannel());
