@@ -2,6 +2,7 @@ package de.zettee.syndicatebot.listener;
 
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
+import de.zettee.syndicatebot.Core;
 import de.zettee.syndicatebot.audio.BotConnection;
 import de.zettee.syndicatebot.audio.manager.GuildMusicManager;
 import de.zettee.syndicatebot.messages.Reactions;
@@ -17,6 +18,8 @@ public class OnReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
+        if(Core.isDevmode()) return;
+
         if(!event.getReaction().isSelf() && !event.getReactionEmote().isEmote()) {
             String received = event.getReactionEmote().getEmoji();
             handle(received, event.getMessageId(), event.getGuild());
@@ -25,6 +28,8 @@ public class OnReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {
+        if(Core.isDevmode()) return;
+
         if(!event.getReaction().isSelf() && !event.getReactionEmote().isEmote()) {
             String received = event.getReactionEmote().getEmoji();
             handle(received, event.getMessageId(), event.getGuild());
@@ -32,6 +37,8 @@ public class OnReactionListener extends ListenerAdapter {
     }
 
     private void handle(String received, String message, Guild guild) {
+        if(Core.isDevmode()) return;
+
         GuildMusicManager musicManager = BotConnection.getGuildMusicManager(guild);
         if(message.equals(musicManager.scheduler.getCurrentlyPlayingInfo().getId())) {
             if (received.equals(Reactions.REACTION_PAUSE)) {
