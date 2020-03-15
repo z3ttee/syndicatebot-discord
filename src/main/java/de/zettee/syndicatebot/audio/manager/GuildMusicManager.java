@@ -14,12 +14,14 @@ import java.util.HashMap;
 
 public class GuildMusicManager {
 
+    @Getter private Guild guild;
     public final AudioPlayer player;
     public final BotAudioScheduler scheduler;
 
     @Getter private HashMap<Guild, HashMap<AudioTrack, Member>> requests = new HashMap<>();
 
     public GuildMusicManager(AudioPlayerManager manager, Guild guild) {
+        this.guild = guild;
         this.player = manager.createPlayer();
         this.scheduler = new BotAudioScheduler(player, guild);
         player.addListener(this.scheduler);

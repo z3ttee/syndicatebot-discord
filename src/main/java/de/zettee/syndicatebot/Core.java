@@ -8,8 +8,13 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import de.zettee.syndicatebot.audio.BotConnection;
 import de.zettee.syndicatebot.command.CommandHandler;
+import de.zettee.syndicatebot.command.commands.admin.CMD_Devmode;
 import de.zettee.syndicatebot.command.commands.connection.CMD_Join;
 import de.zettee.syndicatebot.command.commands.connection.CMD_Leave;
 import de.zettee.syndicatebot.command.commands.general.CMD_Help;
@@ -17,10 +22,13 @@ import de.zettee.syndicatebot.command.commands.CMD_Update;
 import de.zettee.syndicatebot.command.commands.music.*;
 import de.zettee.syndicatebot.configuration.Configurator;
 import de.zettee.syndicatebot.listener.OnGuildListener;
+import de.zettee.syndicatebot.listener.OnReactionListener;
 import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
@@ -39,9 +47,20 @@ public class Core {
     @Getter private final String YOUTUBE_API_KEY;
     @Getter private final String APPLICATION_NAME = "SyndicateBot Discord";
     @Getter private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    @Getter @Setter private static boolean devmode = false;
 
-    public Core(String token, String api_key) {
+    @Getter private final SpotifyApi spotifyAPI;
+
+    public Core(String token, String api_key, String spotifyClientID, String spotifyClientSecret) throws IOException, SpotifyWebApiException {
         System.out.println(api_key);
+
+        spotifyAPI = new SpotifyApi.Builder().setClientId(spotifyClientID).setClientSecret(spotifyClientSecret).build();
+        ClientCredentialsRequest credentialsRequest = spotifyAPI.clientCredentials().build();
+        ClientCredentials credentials = credentialsRequest.execute();
+        spotifyAPI.setAccessToken(credentials.getAccessToken());
+
+        // TODO: Refresh before expiring (expiresIn in sec) - Update every hour
+        System.out.println("Access token expires in: "+credentials.getExpiresIn());
 
         YOUTUBE_API_KEY = api_key;
         instance = this;
@@ -66,12 +85,17 @@ public class Core {
         CommandHandler.getInstance().registerCommand(new CMD_Skip());
         CommandHandler.getInstance().registerCommand(new CMD_Stop());
 
+        // Admin
+        CommandHandler.getInstance().registerCommand(new CMD_Devmode());
+
         JDABuilder builder = new JDABuilder();
         builder.setToken(token);
         builder.setAutoReconnect(true);
         builder.setActivity(Activity.listening("ss help"));
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.addEventListeners(new OnGuildListener());
+        builder.addEventListeners(
+                new OnGuildListener(),
+                new OnReactionListener());
 
         try {
             builder.build();
@@ -80,8 +104,8 @@ public class Core {
         }
     }
 
-    public static void main(@NotNull String[] args) {
-        new Core(args[0], args[1]);
+    public static void main(@NotNull String[] args) throws IOException, SpotifyWebApiException {
+        new Core(args[0], args[1], args[2], args[3]);
     }
 
     public YouTube getYoutubeService() throws GeneralSecurityException, IOException {
@@ -119,5 +143,17 @@ public class Core {
         }, 0L);
 
         return queue;
+    }
+
+    public static void enableDevmode(){
+        for(Guild guild : BotConnection.getMusicManagers().keySet()){
+            BotConnection.getGuildMusicManager(guild).player.destroy();
+            BotConnection.getGuildMusicManager(guild).scheduler.getQueue().clear();
+            guild.getAudioManager().closeAudioConnection();
+        }
+        setDevmode(true);
+    }
+    public static void disableDevmode(){
+        setDevmode(false);
     }
 }

@@ -1,5 +1,7 @@
 package de.zettee.syndicatebot.command;
 
+import de.zettee.syndicatebot.Core;
+import de.zettee.syndicatebot.command.commands.admin.CMD_Devmode;
 import de.zettee.syndicatebot.configuration.Configurator;
 import de.zettee.syndicatebot.messages.Messages;
 import lombok.Getter;
@@ -35,7 +37,13 @@ public class CommandHandler {
         Command command = commands.get(name);
 
         if(command != null) {
-            command.execute(message, arguments.toArray(new String[0]));
+            if(Core.isDevmode() && command instanceof CMD_Devmode) {
+                command.execute(message, arguments.toArray(new String[0]));
+                return;
+            }
+            if(!Core.isDevmode()) {
+                command.execute(message, arguments.toArray(new String[0]));
+            }
         } else {
             Messages.sendError(":mag: Befehl nicht gefunden.", message.getTextChannel());
         }

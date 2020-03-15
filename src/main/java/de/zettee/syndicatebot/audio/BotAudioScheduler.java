@@ -34,8 +34,8 @@ public class BotAudioScheduler extends AudioEventAdapter {
         this.volume = Configurator.ofGuild(guild).getVolume();
     }
 
-    public void enqueue(AudioTrack track) {
-        if(player.getPlayingTrack() != null) {
+    public void enqueue(AudioTrack track, boolean isPlaylist) {
+        if(!isPlaylist && player.getPlayingTrack() != null) {
             Messages.sendEnqueuedInfo(BotConnection.getTextChannel(guild), track);
         }
 
@@ -60,7 +60,7 @@ public class BotAudioScheduler extends AudioEventAdapter {
     public void onPlayerPause(AudioPlayer player) {
         super.onPlayerPause(player);
         if(playerPausedInfo != null && BotConnection.getTextChannel(guild).getLatestMessageId().equals(playerPausedInfo.getId())) {
-            playerPausedInfo.editMessage(":pause_button: Sendung angehalten.").queue(this::setPlayerPausedInfo);
+            playerPausedInfo.editMessage(":pause_button: **Sendung angehalten.**").queue(this::setPlayerPausedInfo);
         } else {
             Messages.sendTextAndGet(":pause_button: Sendung angehalten.", BotConnection.getTextChannel(guild), this::setPlayerPausedInfo);
         }
@@ -70,7 +70,7 @@ public class BotAudioScheduler extends AudioEventAdapter {
     public void onPlayerResume(AudioPlayer player) {
         super.onPlayerResume(player);
         if(playerPausedInfo != null && BotConnection.getTextChannel(guild).getLatestMessageId().equals(playerPausedInfo.getId())) {
-            playerPausedInfo.editMessage(":play_pause: Sendung wird fortgesetzt.").queue(this::setPlayerPausedInfo);
+            playerPausedInfo.editMessage(":play_pause: **Sendung wird fortgesetzt.**").queue(this::setPlayerPausedInfo);
         } else {
             Messages.sendTextAndGet(":play_pause: Sendung wird fortgesetzt.", BotConnection.getTextChannel(guild), this::setPlayerPausedInfo);
         }
