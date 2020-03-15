@@ -8,6 +8,10 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import de.zettee.syndicatebot.audio.BotConnection;
 import de.zettee.syndicatebot.command.CommandHandler;
 import de.zettee.syndicatebot.command.commands.admin.CMD_Devmode;
@@ -45,8 +49,18 @@ public class Core {
     @Getter private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     @Getter @Setter private static boolean devmode = false;
 
-    public Core(String token, String api_key) {
+    @Getter private final SpotifyApi spotifyAPI;
+
+    public Core(String token, String api_key, String spotifyClientID, String spotifyClientSecret) throws IOException, SpotifyWebApiException {
         System.out.println(api_key);
+
+        spotifyAPI = new SpotifyApi.Builder().setClientId(spotifyClientID).setClientSecret(spotifyClientSecret).build();
+        ClientCredentialsRequest credentialsRequest = spotifyAPI.clientCredentials().build();
+        ClientCredentials credentials = credentialsRequest.execute();
+        spotifyAPI.setAccessToken(credentials.getAccessToken());
+
+        // TODO: Refresh before expiring (expiresIn in sec) - Update every hour
+        System.out.println("Access token expires in: "+credentials.getExpiresIn());
 
         YOUTUBE_API_KEY = api_key;
         instance = this;
@@ -90,8 +104,8 @@ public class Core {
         }
     }
 
-    public static void main(@NotNull String[] args) {
-        new Core(args[0], args[1]);
+    public static void main(@NotNull String[] args) throws IOException, SpotifyWebApiException {
+        new Core(args[0], args[1], args[2], args[3]);
     }
 
     public YouTube getYoutubeService() throws GeneralSecurityException, IOException {

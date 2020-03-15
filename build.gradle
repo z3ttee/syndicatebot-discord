@@ -60,4 +60,7 @@ dependencies {
 
     // Emoji Lib
     implementation 'com.vdurmont:emoji-java:5.1.1'
+
+    // Spotify Web API
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:4.2.1'
 }
