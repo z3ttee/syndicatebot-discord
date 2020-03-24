@@ -23,8 +23,10 @@ import de.zettee.syndicatebot.command.commands.music.*;
 import de.zettee.syndicatebot.configuration.Configurator;
 import de.zettee.syndicatebot.listener.OnGuildListener;
 import de.zettee.syndicatebot.listener.OnReactionListener;
+import de.zettee.syndicatebot.listener.OnRoleListener;
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -43,11 +45,12 @@ import java.util.function.Consumer;
 public class Core {
 
     @Getter private static Core instance;
+    @Getter private static JDA jda;
 
     @Getter private final String YOUTUBE_API_KEY;
     @Getter private final String APPLICATION_NAME = "SyndicateBot Discord";
     @Getter private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    @Getter @Setter private static boolean devmode = false;
+    @Getter private static boolean devmode = false;
 
     @Getter private final SpotifyApi spotifyAPI;
 
@@ -95,10 +98,11 @@ public class Core {
         builder.setStatus(OnlineStatus.ONLINE);
         builder.addEventListeners(
                 new OnGuildListener(),
-                new OnReactionListener());
+                new OnReactionListener(),
+                new OnRoleListener());
 
         try {
-            builder.build();
+            jda = builder.build();
         } catch (LoginException e) {
             e.printStackTrace();
         }
@@ -131,7 +135,7 @@ public class Core {
                     String playableUrl = "https://www.youtube.com/watch?v=" + videoID;
 
                     if (playlistID != null) {
-                        playableUrl += "&list=PLK4IGlmN6libzkoH_QlNW0dK2q2YQF4Yl";
+                        playableUrl += "&list="+playlistID;
                     }
 
                     queue.offer(playableUrl);
@@ -155,5 +159,13 @@ public class Core {
     }
     public static void disableDevmode(){
         setDevmode(false);
+    }
+    private static void setDevmode(boolean b) {
+        if(b) setActivity(Activity.listening("Eingeschränkt nutzbar"), OnlineStatus.IDLE);
+        else setActivity(Activity.listening("ss help"), OnlineStatus.ONLINE);
+    }
+
+    public static void setActivity(Activity activity, OnlineStatus status) {
+        jda.getPresence().setPresence(status, activity, (status == OnlineStatus.IDLE));
     }
 }
