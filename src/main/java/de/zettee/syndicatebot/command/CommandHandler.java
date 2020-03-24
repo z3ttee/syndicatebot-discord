@@ -26,7 +26,8 @@ public class CommandHandler {
         commands.put(command.getName(), command);
     }
     public void handleCommand(Message message){
-        String msg = message.getContentRaw().replace(Configurator.ofGuild(message.getGuild()).getPrefix(), "");
+        String prefix = Configurator.ofGuild(message.getGuild()).getPrefix();
+        String msg = message.getContentRaw().substring(prefix.length());
 
         String[] args = msg.split(" ");
         String name = args[0];
